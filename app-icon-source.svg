@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Dark background -->
+  <rect width="1024" height="1024" fill="#1a1a1e"/>
+  <!-- Blue dot, left side -->
+  <circle cx="310" cy="512" r="150" fill="#3b82f6"/>
+  <!-- Backwards C, right side: gap faces LEFT toward the dot -->
+  <!-- Center (710,512), r=133, gap ±35° from 9-o'clock -->
+  <!-- End A at 145° (lower-left): (601.2,588.3)  End B at 215° (upper-left): (601.2,435.7) -->
+  <path d="M 601.2 588.3 A 133 133 0 1 0 601.2 435.7"
+    fill="none" stroke="#2d3748" stroke-width="83" stroke-linecap="butt"/>
+</svg>

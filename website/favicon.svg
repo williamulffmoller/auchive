@@ -1,9 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 100">
-  <!-- Blue dot on the left -->
+  <!-- Blue dot on left -->
   <circle cx="47" cy="50" r="40" fill="#3b82f6"/>
-  <!-- Dark C arc, gap facing left (toward the dot), flat ends -->
-  <!-- Center (150,50), r=36, gap ±35° from 9 o'clock -->
-  <!-- End A at 145°: (120.5, 70.7)  End B at 215°: (120.5, 29.3) -->
-  <path d="M 120.5 70.7 A 36 36 0 1 0 120.5 29.3"
+  <!-- Backwards C on right: body wraps bottom→right→top, gap faces LEFT toward the dot -->
+  <!-- Center (152,50), r=37, gap ±35° from 9-o'clock (180°) -->
+  <!-- End A at 145° (lower-left): (121.7, 71.2)  End B at 215° (upper-left): (121.7, 28.8) -->
+  <!-- sweep=0 (CCW on screen) draws the 290° arc through bottom→right→top = backwards C -->
+  <path d="M 121.7 71.2 A 37 37 0 1 0 121.7 28.8"
     fill="none" stroke="#2d3748" stroke-width="23" stroke-linecap="butt"/>
 </svg>
