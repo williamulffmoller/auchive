@@ -58,17 +58,7 @@
       letter-spacing: -0.04em; line-height: 1.0;
       color: var(--text); max-width: 900px; margin-bottom: 24px;
     }
-    .hero-i { display: inline-block; position: relative; vertical-align: baseline; }
-    .hero-i::before {
-      content: ''; position: absolute; border-radius: 50%;
-      background: #f4f1ec; width: 0.40em; height: 0.40em;
-      top: 0.02em; left: 50%; transform: translateX(-50%); z-index: 1;
-    }
-    .hero-i::after {
-      content: ''; position: absolute; border-radius: 50%;
-      background: #f59e0b; width: 0.22em; height: 0.22em;
-      top: 0.11em; left: 50%; transform: translateX(-50%); z-index: 2;
-    }
+
     .hero-sub {
       font-size: clamp(16px, 2vw, 20px); color: var(--muted);
       max-width: 500px; margin-bottom: 44px; line-height: 1.55; font-weight: 400;
@@ -195,7 +185,7 @@
 <!-- HERO -->
 <section class="hero">
   <p style="font-size:13px;color:var(--faint);letter-spacing:0.01em;margin-bottom:14px;font-family:Georgia,serif;">/ɔːkaɪv/</p>
-  <h1>Your aud<span class="hero-i">i</span>o arch<span class="hero-i">i</span>ve<span style="color:#3b82f6;font-size:1.15em;">.</span></h1>
+  <h1>Your audio archive<span style="color:#3b82f6;font-size:1.15em;">.</span></h1>
   <p class="hero-sub">Auchive is a local music project manager for musicians. Sort through every idea and version, give tags and play them through.</p>
   <div class="hero-actions">
     <a href="#download" class="btn-primary">↓ Download for Mac</a>
