@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 100">
   <!-- Blue dot on left -->
-  <circle cx="47" cy="50" r="40" fill="#3b82f6"/>
+  <circle cx="44" cy="50" r="28" fill="#3b82f6"/>
   <!-- Backwards C on right: body wraps bottom→right→top, gap faces LEFT toward the dot -->
   <!-- Center (152,50), r=37, gap ±35° from 9-o'clock (180°) -->
   <!-- End A at 145° (lower-left): (121.7, 71.2)  End B at 215° (upper-left): (121.7, 28.8) -->
