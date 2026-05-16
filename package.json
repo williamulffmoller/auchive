@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "release": "PATH=\"$HOME/.cargo/bin:$PATH\" npm run tauri build && node -e \"const fs=require('fs'),g=fs.readdirSync('src-tauri/target/release/bundle/dmg').find(f=>f.endsWith('.dmg')&&!f.includes('_renamed'));if(g){const v=require('./package.json').version.replace(/\\.0$/,''),n='src-tauri/target/release/bundle/dmg/Auchive_'+v+'.dmg';fs.renameSync('src-tauri/target/release/bundle/dmg/'+g,n);console.log('Built: '+n);}\""
+    "release": "bash scripts/release.sh"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",
