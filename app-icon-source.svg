@@ -1,11 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
-  <!-- Dark background -->
-  <rect width="1024" height="1024" fill="#1a1a1e"/>
-  <!-- Blue dot, left side -->
-  <circle cx="310" cy="512" r="150" fill="#3b82f6"/>
-  <!-- Backwards C, right side: gap faces LEFT toward the dot -->
-  <!-- Center (710,512), r=133, gap ±35° from 9-o'clock -->
-  <!-- End A at 145° (lower-left): (601.2,588.3)  End B at 215° (upper-left): (601.2,435.7) -->
-  <path d="M 601.2 588.3 A 133 133 0 1 0 601.2 435.7"
-    fill="none" stroke="#2d3748" stroke-width="83" stroke-linecap="butt"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Same design as favicon, centered in a square -->
+  <!-- Blue dot -->
+  <circle cx="41" cy="101" r="24" fill="#3b82f6"/>
+  <!-- Backwards C: center (135,101), r=37, gap ±35° from 9-o'clock -->
+  <!-- End A (145°): (104.7,122.2)  End B (215°): (104.7,79.8) -->
+  <path d="M 104.7 122.2 A 37 37 0 1 0 104.7 79.8"
+    fill="none" stroke="#2d3748" stroke-width="23" stroke-linecap="butt"/>
 </svg>
