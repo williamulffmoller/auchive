@@ -19,8 +19,12 @@ import PlaylistsView from './PlaylistsView'
 import PlaylistDetail from './PlaylistDetail'
 
 const DEFAULT_STATUSES: Status[] = [
-  { id: 'status-default-1', label: 'To finish', color: '#3b82f6', sort_order: 0 },
-  { id: 'status-default-2', label: 'Unsure', color: '#9ca3af', sort_order: 1 },
+  { id: 'status-default-1', label: 'Done', color: '#07ac0b', sort_order: 0 },
+  { id: 'status-default-2', label: 'Almost done', color: '#3ce1a8', sort_order: 1 },
+  { id: 'status-default-3', label: 'To finish', color: '#3b82f6', sort_order: 2 },
+  { id: 'status-default-4', label: 'Potential', color: '#f59e0b', sort_order: 3 },
+  { id: 'status-default-5', label: 'Unsure', color: '#f43f5e', sort_order: 4 },
+  { id: 'status-default-6', label: 'Cancelled', color: '#374151', sort_order: 5 },
 ]
 
 const AUDIO_EXTS = /\.(mp3|wav|aiff?|m4a|ogg|flac|aac)$/i
