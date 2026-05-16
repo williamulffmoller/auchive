@@ -1,0 +1,2 @@
+# Don't commit the DMG — it's added as a GitHub Release asset
+*.dmg
