@@ -474,20 +474,27 @@
     <div class="download-badge"><span>🍎</span> macOS · Windows coming soon</div>
     <br />
     <!-- Installation guide -->
-    <div style="max-width:480px;margin:0 auto 32px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px 28px;text-align:left;">
-      <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Before you download</div>
-      <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px;">macOS will warn you — that's normal</div>
-      <p style="font-size:13px;color:var(--muted);line-height:1.6;margin:0 0 16px;">Auchive is safe. macOS shows a warning because it requires developers to pay Apple $99/year for a verified certificate. Auchive is an independent app and doesn't have one yet. Here's how to open it:</p>
-      <ol style="margin:0 0 16px 0;padding-left:20px;display:flex;flex-direction:column;gap:10px;font-size:13px;color:var(--muted);line-height:1.5;">
+    <div style="max-width:560px;margin:0 auto 28px;background:var(--card);border:1px solid var(--border);border-left:3px solid #f59e0b;border-radius:14px;padding:28px 32px;text-align:left;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span style="font-size:16px;line-height:1;">⚠️</span>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);">Before you download</div>
+      </div>
+      <div style="font-size:19px;font-weight:700;color:var(--text);margin-bottom:10px;letter-spacing:-0.02em;">macOS will warn you — that's normal</div>
+      <p style="font-size:14px;color:var(--muted);line-height:1.65;margin:0 0 18px;">Auchive is safe. macOS shows a warning because it requires developers to pay Apple $99/year for a verified certificate. Auchive is an independent app and doesn't have one yet. Here's how to open it:</p>
+      <ol style="margin:0 0 20px 0;padding-left:20px;display:flex;flex-direction:column;gap:10px;font-size:14px;color:var(--muted);line-height:1.5;">
         <li>Open the <strong style="color:var(--text);">.dmg</strong> file and drag Auchive to your <strong style="color:var(--text);">Applications</strong> folder</li>
         <li>Try to open Auchive — macOS will block it with a warning</li>
         <li>Go to <strong style="color:var(--text);">System Settings → Privacy &amp; Security</strong> and scroll down</li>
         <li>Click <strong style="color:var(--text);">"Open Anyway"</strong> next to the Auchive message</li>
       </ol>
-      <p style="font-size:12px;color:var(--faint);margin:0;line-height:1.5;">You only need to do this once. After that, Auchive opens normally.</p>
+      <p style="font-size:12px;color:var(--faint);margin:0 0 20px;line-height:1.5;">You only need to do this once. After that, Auchive opens normally.</p>
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;user-select:none;">
+        <input type="checkbox" id="gatekeeper-understood" style="margin-top:3px;width:16px;height:16px;accent-color:var(--text);flex-shrink:0;cursor:pointer;" />
+        <span style="font-size:14px;font-weight:500;color:var(--text);line-height:1.45;">I understand — I'll follow the steps above to open Auchive</span>
+      </label>
     </div>
-    <a href="https://github.com/williamulffmoller/auchive/releases/download/v1.2.0/Auchive_1.2.dmg" class="btn-primary" style="font-size: 16px; padding: 16px 36px;">
-      ↓ Download for Mac <span style="font-weight:400; opacity:.55; font-size:13px; margin-left:4px;">v1.2 beta</span>
+    <a href="https://github.com/williamulffmoller/auchive/releases/download/v1.2.0/Auchive_1.2.dmg" class="btn-primary" id="download-btn" style="font-size:16px;padding:16px 36px;opacity:0.35;pointer-events:none;cursor:not-allowed;">
+      ↓ Download for Mac <span style="font-weight:400;opacity:.55;font-size:13px;margin-left:4px;">v1.2 beta</span>
     </a>
     <p style="margin-top: 20px; font-size: 13px; color: var(--faint);">
       Questions? <a href="mailto:auchivesoftware@gmail.com" style="color: var(--muted); text-decoration: underline;">auchivesoftware@gmail.com</a>
@@ -819,6 +826,19 @@
     requestAnimationFrame(() => {
       wfWrap.appendChild(renderWaveform(wfWrap, t.bars, 0, 36, 2))
     })
+  })
+
+  document.getElementById('gatekeeper-understood').addEventListener('change', function() {
+    const btn = document.getElementById('download-btn')
+    if (this.checked) {
+      btn.style.opacity = '1'
+      btn.style.pointerEvents = 'auto'
+      btn.style.cursor = 'pointer'
+    } else {
+      btn.style.opacity = '0.35'
+      btn.style.pointerEvents = 'none'
+      btn.style.cursor = 'not-allowed'
+    }
   })
 </script>
 </body>
