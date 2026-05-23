@@ -34,6 +34,7 @@ interface Props {
   showBpmKey?: boolean
   showProjectFile?: boolean
   trackHeight?: number
+  missingVerIds?: Set<string>
 }
 
 function fmt(s?: number | null) {
@@ -47,7 +48,7 @@ function displayProjectName(s: Song): string | null {
   return s.project_name || null
 }
 
-export default function PlaylistDetail({ playlist, songs, statuses, playingVerId, isPlaying, progress, duration, onPlay, onSeek, backLabel, onBack, onRename, onDelete, onAddSong, onRemoveSong, onReorder, latestVer, onPickCoverArt, onRemoveCoverArt, onOpenSong, filters, zoom = 1, showTags = true, showWaveforms = true, showStatus = true, showBpmKey = true, showProjectFile = true, trackHeight = 38 }: Props) {
+export default function PlaylistDetail({ playlist, songs, statuses, playingVerId, isPlaying, progress, duration, onPlay, onSeek, backLabel, onBack, onRename, onDelete, onAddSong, onRemoveSong, onReorder, latestVer, onPickCoverArt, onRemoveCoverArt, onOpenSong, filters, zoom = 1, showTags = true, showWaveforms = true, showStatus = true, showBpmKey = true, showProjectFile = true, trackHeight = 38, missingVerIds = new Set<string>() }: Props) {
   const [name, setName] = useState(playlist.name)
   const [addingTracks, setAddingTracks] = useState(false)
   const [search, setSearch] = useState('')
@@ -354,7 +355,7 @@ export default function PlaylistDetail({ playlist, songs, statuses, playingVerId
                   : null}
               </div>
               <div style={{ fontSize: 11, color: 'var(--muted)', flexShrink: 0, width: 36, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                {isThis && duration > 0 ? fmt(progress) : fmt(ver?.duration)}
+                {isThis && duration > 0 ? fmt(progress) : ver && missingVerIds.has(ver.id) ? <span style={{ color: '#f59e0b', fontSize: 10 }}>missing</span> : fmt(ver?.duration)}
               </div>
               <button onClick={() => onRemoveSong(playlist.id, song.id)}
                 style={{ background: 'none', border: 'none', fontSize: 16, color: 'var(--faint)', cursor: 'pointer', padding: '0 4px', lineHeight: 1, flexShrink: 0, fontFamily: 'inherit' }}

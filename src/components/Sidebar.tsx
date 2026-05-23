@@ -278,10 +278,10 @@ export default function Sidebar({ songs, versions, statuses, filters, setFilters
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <span style={lbl}>View</span>
+        <Toggle label="Show waveforms" value={showWaveforms} onChange={setShowWaveforms} />
         <Toggle label="Show status" value={showStatus} onChange={setShowStatus} />
         <Toggle label="Show tags" value={showTags} onChange={setShowTags} />
         <Toggle label="Show project file" value={showProjectFile} onChange={setShowProjectFile} />
-        <Toggle label="Show waveforms" value={showWaveforms} onChange={setShowWaveforms} />
         <Toggle label="Show BPM & key" value={showBpmKey} onChange={setShowBpmKey} />
         <Toggle label="Show covers" value={showCovers} onChange={setShowCovers} />
       </div>

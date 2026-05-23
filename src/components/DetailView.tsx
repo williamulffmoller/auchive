@@ -34,6 +34,7 @@ interface Props {
   isDragOver: boolean
   daws?: string[]
   zoom?: number
+  missingVerIds?: Set<string>
 }
 
 function fmt(s?: number | null) {
@@ -75,9 +76,10 @@ function FeaturedPlaylistRow({ playlist, songs, onOpen, onRemove }: { playlist: 
   )
 }
 
-export default function DetailView({ song, versions, statuses, songs, playlists, playingVerId, isPlaying, progress, duration, onPlay, onSeek, backLabel, onBack, onUpdateSong, onDeleteSong, onDeleteVersion, onAddVersion, onUpdateVersion, onReorderVersions, onPickCoverArt, onRemoveCoverArt, onPickProjectFile, onOpenProjectFolder, onAddToPlaylist, onRemoveFromPlaylist, onOpenPlaylist, isDragOver, daws = DAWS, zoom = 1 }: Props) {
+export default function DetailView({ song, versions, statuses, songs, playlists, playingVerId, isPlaying, progress, duration, onPlay, onSeek, backLabel, onBack, onUpdateSong, onDeleteSong, onDeleteVersion, onAddVersion, onUpdateVersion, onReorderVersions, onPickCoverArt, onRemoveCoverArt, onPickProjectFile, onOpenProjectFolder, onAddToPlaylist, onRemoveFromPlaylist, onOpenPlaylist, isDragOver, daws = DAWS, zoom = 1, missingVerIds = new Set<string>() }: Props) {
   const [tab, setTab] = useState<'versions' | 'details'>('details')
   const [activeVerId, setActiveVerId] = useState<string | null>(versions[0]?.id ?? null)
+  const [hoveredVerI, setHoveredVerI] = useState<number | null>(null)
   const [showPlaylistPicker, setShowPlaylistPicker] = useState(false)
   const playlistPickerRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -351,7 +353,7 @@ export default function DetailView({ song, versions, statuses, songs, playlists,
                   <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 1 }}>{new Date(activeVer.created_at).toLocaleDateString()}</div>
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--muted)', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
-                  {isActiveVerPlaying ? `${fmt(progress)} / ${fmt(duration)}` : fmt(activeVer.duration)}
+                  {isActiveVerPlaying ? `${fmt(progress)} / ${fmt(duration)}` : missingVerIds.has(activeVer.id) ? <span style={{ color: '#f59e0b', fontSize: 10 }}>missing</span> : fmt(activeVer.duration)}
                 </div>
               </div>
               {activeVer.waveform_data && (
@@ -495,9 +497,9 @@ export default function DetailView({ song, versions, statuses, songs, playlists,
                       setActiveVerId(ver.id); onPlay(ver)
                     }}
                     onPointerDown={e => onVerRowDown(e, i, ver.filename)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 0', borderBottom: '1px solid var(--border)', cursor: dragVerIdx !== null ? 'grabbing' : 'grab', opacity: dragVerIdx === i ? 0.2 : isActive ? 1 : 0.4, transition: 'opacity .12s', userSelect: 'none', touchAction: 'none' }}
-                    onMouseEnter={e => { if (dragVerIdx === null) e.currentTarget.style.opacity = '1' }}
-                    onMouseLeave={e => { if (dragVerIdx === null) e.currentTarget.style.opacity = isActive ? '1' : '0.4' }}>
+                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 0', borderBottom: '1px solid var(--border)', cursor: dragVerIdx !== null ? 'grabbing' : 'grab', opacity: dragVerIdx === i ? 0.2 : (isActive || hoveredVerI === i) ? 1 : 0.4, transition: 'opacity .12s', userSelect: 'none', touchAction: 'none' }}
+                    onMouseEnter={() => { if (dragVerIdx === null) setHoveredVerI(i) }}
+                    onMouseLeave={() => { if (dragVerIdx === null) setHoveredVerI(null) }}>
                     <span style={{ color: 'var(--faint)', fontSize: 13, flexShrink: 0, padding: '0 2px' }}>⠿</span>
                     <span style={{ fontSize: 10, color: 'var(--faint)', width: 20, textAlign: 'right', flexShrink: 0 }}>v{sorted.length - i}</span>
                     <button onClick={e => { e.stopPropagation(); setActiveVerId(ver.id); onPlay(ver) }}
@@ -527,7 +529,7 @@ export default function DetailView({ song, versions, statuses, songs, playlists,
                         onClick={pct => { setActiveVerId(ver.id); if (isThisPlaying) onSeek(pct * duration); else onPlay(ver, pct) }} />}
                     </div>
                     <div style={{ fontSize: 11, color: 'var(--muted)', flexShrink: 0, minWidth: 38, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                      {isThisPlaying ? fmt(progress) : fmt(ver.duration)}
+                      {isThisPlaying ? fmt(progress) : missingVerIds.has(ver.id) ? <span style={{ color: '#f59e0b', fontSize: 10 }}>missing</span> : fmt(ver.duration)}
                     </div>
                     {i === 0 && <span style={{ fontSize: 9, background: 'var(--border)', borderRadius: 3, padding: '2px 5px', color: 'var(--muted)', flexShrink: 0 }}>latest</span>}
                     {confirmDeleteVerId === ver.id ? (

@@ -4,6 +4,7 @@ import type { Song, Version } from '../lib/types'
 interface Props {
   version: Version
   song: Song | null
+  songTitle: string
   coverArtUrl: string | null
   isPlaying: boolean
   isLoading: boolean
@@ -82,9 +83,9 @@ function VolFader({ volume, onVolume }: { volume: number; onVolume: (v: number) 
   )
 }
 
-export default function PlayerBar({ version, song, coverArtUrl, isPlaying, isLoading, progress, duration, volume, playMode, onPlayPause, onSeek, onVolume, onSkipNext, onSkipBack, onCycleMode, onGoToSong }: Props) {
+export default function PlayerBar({ version, song, songTitle, coverArtUrl, isPlaying, isLoading, progress, duration, volume, playMode, onPlayPause, onSeek, onVolume, onSkipNext, onSkipBack, onCycleMode, onGoToSong }: Props) {
   const pct = duration ? (progress / duration) * 100 : 0
-  const title = song?.title?.trim() || song?.project_name?.trim() || version.filename.replace(/\.[^.]+$/, '')
+  const title = songTitle
   const sub = song?.project_name && song?.title ? song.project_name : version.filename
 
   const btnStyle: React.CSSProperties = { width: 34, height: 34, borderRadius: '50%', border: '1.5px solid var(--border)', background: 'transparent', cursor: 'pointer', fontSize: 12, color: 'var(--text)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontFamily: 'inherit' }

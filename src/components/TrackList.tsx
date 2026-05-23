@@ -34,6 +34,7 @@ interface Props {
   showStatus: boolean
   trackHeight: number
   zoom: number
+  missingVerIds: Set<string>
 }
 
 function fmtDur(s?: number | null) {
@@ -63,7 +64,7 @@ function CoverThumb({ path }: { path: string | null }) {
   )
 }
 
-export default function TrackList({ songs, versions, statuses, playlists, filters, sortMode, searchQuery, setSearchQuery, playingVerId, isPlaying, progress, duration, onPlay, onSeek, onOpenSong, onAddSongs, latestVer, showTags, showBpmKey, showProjectFile, showWaveforms, showCovers, showStatus, trackHeight, zoom, mainTab, setMainTab, onNewPlaylist, isDragOver, onSetStatus }: Props) {
+export default function TrackList({ songs, versions, statuses, playlists, filters, sortMode, searchQuery, setSearchQuery, playingVerId, isPlaying, progress, duration, onPlay, onSeek, onOpenSong, onAddSongs, latestVer, showTags, showBpmKey, showProjectFile, showWaveforms, showCovers, showStatus, trackHeight, zoom, mainTab, setMainTab, onNewPlaylist, isDragOver, onSetStatus, missingVerIds }: Props) {
   const [ctxMenu, setCtxMenu] = useState<{ songId: string; x: number; y: number } | null>(null)
   const ctxMenuRef = useRef<HTMLDivElement>(null)
 
@@ -198,7 +199,8 @@ export default function TrackList({ songs, versions, statuses, playlists, filter
               }}>
 
               <button onClick={e => { e.stopPropagation(); if (ver) onPlay(ver) }}
-                style={{ width: 28, height: 28, borderRadius: '50%', border: `1.5px solid ${isThis ? 'var(--text)' : 'var(--border)'}`, background: 'transparent', cursor: 'pointer', fontSize: 9, color: isThis ? 'var(--text)' : 'var(--muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontFamily: 'inherit' }}>
+                style={{ width: 28, height: 28, borderRadius: '50%', border: `1.5px solid ${isThis ? 'var(--text)' : ver && missingVerIds.has(ver.id) ? '#f59e0b' : 'var(--border)'}`, background: 'transparent', cursor: 'pointer', fontSize: 9, color: isThis ? 'var(--text)' : ver && missingVerIds.has(ver.id) ? '#f59e0b' : 'var(--muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontFamily: 'inherit' }}
+                title={ver && missingVerIds.has(ver.id) ? 'File not found' : undefined}>
                 {isThis && isPlaying ? '⏸' : '▶'}
               </button>
 
@@ -240,7 +242,7 @@ export default function TrackList({ songs, versions, statuses, playlists, filter
               )}
 
               <div style={{ fontSize: 11, color: 'var(--muted)', flexShrink: 0, width: 40, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                {isThis && duration > 0 ? fmtDur(progress) : fmtDur(ver?.duration)}
+                {isThis && duration > 0 ? fmtDur(progress) : ver && missingVerIds.has(ver.id) ? <span style={{ color: '#f59e0b', fontSize: 10 }}>missing</span> : fmtDur(ver?.duration)}
               </div>
             </div>
           )

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { invoke } from '@tauri-apps/api/core'
 import { open, save } from '@tauri-apps/plugin-dialog'
-import { readFile, writeFile } from '@tauri-apps/plugin-fs'
+import { readFile, writeFile, exists } from '@tauri-apps/plugin-fs'
 import { convertFileSrc } from '@tauri-apps/api/core'
 import { revealItemInDir } from '@tauri-apps/plugin-opener'
 import { extractAndSaveCoverArt } from '../lib/coverArtExtract'
@@ -45,7 +45,7 @@ export default function Player() {
   const [openPlaylistId, setOpenPlaylistId] = useState<string | null>(null)
   const [prevSongId, setPrevSongId] = useState<string | null>(null)
   const [showTags, setShowTags] = useState(true)
-  const [showProjectFile, setShowProjectFile] = useState(() => localStorage.getItem('auchive-showProjectFile') !== 'false')
+  const [showProjectFile, setShowProjectFile] = useState(() => localStorage.getItem('auchive-showProjectFile') === 'true')
   const [showWaveforms, setShowWaveforms] = useState(true)
   const [showCovers, setShowCovers] = useState(() => localStorage.getItem('auchive-covers') === 'true')
   const [showStatus, setShowStatus] = useState(() => localStorage.getItem('auchive-showStatus') !== 'false')
@@ -71,6 +71,9 @@ export default function Player() {
   const [volume, setVolume] = useState(0.8)
   const [playMode, setPlayMode] = useState<'stop' | 'next' | 'repeat'>('stop')
   const [trackLoading, setTrackLoading] = useState(false)
+  const [missingVerIds, setMissingVerIds] = useState<Set<string>>(new Set())
+  const [missingToast, setMissingToast] = useState(false)
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const blobUrlRef = useRef<string | null>(null)
@@ -140,14 +143,8 @@ export default function Player() {
     return vers.sort((a, b) => (b.sort_order ?? 0) - (a.sort_order ?? 0))[0]
   }, [versions])
 
-  useEffect(() => {
-    if (!openSongId) return
-    const playingVerSongId = versions.find(v => v.id === playingVerId)?.song_id
-    if (playingVerSongId !== openSongId) {
-      const latest = latestVer(openSongId)
-      if (latest) setPlayingVerId(latest.id)
-    }
-  }, [openSongId])
+  const mainScrollRef = useRef<HTMLDivElement>(null)
+  useEffect(() => { mainScrollRef.current?.scrollTo({ top: 0 }) }, [openSongId, openPlaylistId])
 
   useEffect(() => {
     async function load() {
@@ -251,15 +248,30 @@ export default function Player() {
     setPlayingVerId(ver.id)
     setProgress(0); setDuration(0); setTrackLoading(true)
     try {
-      // convertFileSrc is synchronous — no async gap before audio.play(), preserving user gesture context
+      const fileExists = await exists(ver.file_path)
+      if (reqId !== playReqRef.current) return
+      if (!fileExists) {
+        setMissingVerIds(prev => new Set([...prev, ver.id]))
+        setTrackLoading(false); setPlayingVerId(null)
+        setMissingToast(true)
+        if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
+        toastTimerRef.current = setTimeout(() => setMissingToast(false), 4000)
+        return
+      }
       const src = convertFileSrc(ver.file_path)
       const audio = new Audio(src)
       audio.volume = volume
       audioRef.current = audio
       audio.addEventListener('loadedmetadata', () => {
         if (reqId !== playReqRef.current) return
+        setMissingVerIds(prev => { const next = new Set(prev); next.delete(ver.id); return next })
         setDuration(audio.duration); setTrackLoading(false)
         if (seekPct !== undefined) audio.currentTime = seekPct * audio.duration
+      }, { once: true })
+      audio.addEventListener('error', () => {
+        if (reqId !== playReqRef.current) return
+        setMissingVerIds(prev => new Set([...prev, ver.id]))
+        setTrackLoading(false); setPlayingVerId(null)
       }, { once: true })
       audio.addEventListener('ended', () => {
         setIsPlaying(false); setProgress(0); cancelAnimationFrame(rafRef.current)
@@ -273,7 +285,12 @@ export default function Player() {
       setIsPlaying(true); rafRef.current = requestAnimationFrame(tick)
     } catch (err) {
       if (reqId !== playReqRef.current) return
-      console.error('Playback error:', err); setTrackLoading(false); setPlayingVerId(null)
+      if (audioRef.current?.error) {
+        setMissingVerIds(prev => new Set([...prev, ver.id]))
+      } else {
+        console.error('Playback error:', err)
+      }
+      setTrackLoading(false); setPlayingVerId(null)
     }
   }
 
@@ -359,6 +376,7 @@ export default function Player() {
     await db.execute('DELETE FROM versions WHERE id = ?', [ver.id])
     setVersions(prev => prev.filter(v => v.id !== ver.id))
     if (playingVerId === ver.id) { cleanupAudio(); setPlayingVerId(null); setIsPlaying(false) }
+    setMissingVerIds(prev => { if (!prev.has(ver.id)) return prev; const next = new Set(prev); next.delete(ver.id); return next })
   }
 
   async function deleteSong(songId: string) {
@@ -723,6 +741,7 @@ export default function Player() {
           isDragOver={isDragOver}
           daws={allDaws}
           zoom={zoom}
+          missingVerIds={missingVerIds}
         />
       )
     }
@@ -750,6 +769,7 @@ export default function Player() {
             showTags={showTags} showWaveforms={showWaveforms} showStatus={showStatus}
             showBpmKey={showBpmKey} showProjectFile={showProjectFile}
             trackHeight={trackHeight}
+            missingVerIds={missingVerIds}
           />
         )
       }
@@ -776,6 +796,7 @@ export default function Player() {
         trackHeight={trackHeight} zoom={zoom}
         mainTab={mainTab} setMainTab={t => { setMainTab(t); setOpenSongId(null); setOpenPlaylistId(null) }}
         onNewPlaylist={newPlaylist} isDragOver={isDragOver} onSetStatus={setStatusQuick}
+        missingVerIds={missingVerIds}
       />
     )
   }
@@ -804,7 +825,7 @@ export default function Player() {
         onNavigate={tab => { setMainTab(tab); setOpenSongId(null); setOpenPlaylistId(null) }}
         onGoHome={() => { setOpenSongId(null); setOpenPlaylistId(null); setMainTab('songs') }}
       />
-      <div style={{ flex: 1, overflowY: 'auto', height: '100vh', background: 'var(--bg)', paddingBottom: playingVer ? 88 : 24 }}>
+      <div ref={mainScrollRef} style={{ flex: 1, overflowY: 'auto', height: '100vh', background: 'var(--bg)', paddingBottom: playingVer ? 88 : 24 }}>
         {renderMain()}
       </div>
       {isDragOver && (
@@ -820,9 +841,15 @@ export default function Player() {
           </div>
         </div>
       )}
+      {missingToast && (
+        <div style={{ position: 'fixed', bottom: playingVer ? 80 : 20, left: '50%', transform: 'translateX(-50%)', background: '#1c1917', color: '#fff', borderRadius: 8, padding: '10px 16px', fontSize: 13, fontWeight: 500, zIndex: 400, display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 20px rgba(0,0,0,0.3)', whiteSpace: 'nowrap' }}>
+          <span style={{ color: '#f59e0b', fontSize: 15 }}>⚠</span>
+          File not found — is your drive connected?
+        </div>
+      )}
       {(playingVer || trackLoading) && (
         <PlayerBar
-          version={playingVer!} song={playingSong} coverArtUrl={playingCoverArtUrl}
+          version={playingVer!} song={playingSong} songTitle={playingSong ? getSongDisplayTitle(playingSong) : (playingVer?.filename.replace(/\.[^.]+$/, '') ?? '')} coverArtUrl={playingCoverArtUrl}
           isPlaying={isPlaying} isLoading={trackLoading}
           progress={progress} duration={duration} volume={volume} playMode={playMode}
           onPlayPause={() => { if (audioRef.current?.paused) { audioRef.current.play(); setIsPlaying(true) } else { audioRef.current?.pause(); setIsPlaying(false) } }}
