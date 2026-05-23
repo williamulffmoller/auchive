@@ -568,7 +568,7 @@
     { title: 'Between',     sub: '',                  dur: '2:58', color: '',        bars: _wf3, prog: 0,    tags: [] },
   ]
   const demo = document.getElementById('waveform-demo')
-  heroTracks.forEach((t, i) => {
+  if (demo) heroTracks.forEach((t, i) => {
     const row = document.createElement('div')
     row.className = 'mock-track'
     const play = document.createElement('div')
