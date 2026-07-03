@@ -122,7 +122,8 @@
       backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
-    .nav-logo { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: var(--text); text-decoration: none; }
+    .nav-logo { display: flex; align-items: center; text-decoration: none; }
+    .nav-logo svg { width: 30px; height: 30px; display: block; }
     .nav-download {
       background: var(--text); color: var(--bg); border: none; border-radius: 8px;
       padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer;
@@ -258,7 +259,13 @@
 <body>
 
 <nav>
-  <a href="#" class="nav-logo">Auchive</a>
+  <a href="#" class="nav-logo" aria-label="Auchive">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+      <circle cx="40.75" cy="100" r="24" fill="#3b82f6"/>
+      <path d="M 104.4 121.2 A 37 37 0 1 0 104.4 78.8"
+        fill="none" stroke="#2d3748" stroke-width="23" stroke-linecap="butt"/>
+    </svg>
+  </a>
   <a href="#download" class="nav-download">Download for Mac</a>
 </nav>
 
